@@ -18,6 +18,7 @@
 #include "esp_crc.h"
 #include <array>
 #include <unordered_map>
+#include <string>
 
 #define ESPNOW_MAXDELAY 512
 #define MAX_RECEIVE_DATA 250

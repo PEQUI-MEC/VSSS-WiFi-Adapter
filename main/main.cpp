@@ -17,11 +17,11 @@
 #include "esp_system.h"
 #include "esp_now.h"
 #include "esp_crc.h"
-#include "esp_now_msg.h"
-#include "motor_control.h"
-#include "encoder.h"
-#include "imu.h"
+
+
 #include <algorithm>
+
+#include "esp_now_msg.h"
 
 #define BUF_SIZE (1024)
 
@@ -98,13 +98,6 @@ void uart_task(void *arg)
                 msg = msg.substr(msg.find(",")+1, msg.length());
         }
     }
-
-        // Send data
-        // const char* send_data = "Hello, world!";
-        // uart_write_bytes(UART_NUM_0, send_data, strlen(send_data));
-       // printf("Sent data: %s\n", send_data);
-
-
 
         vTaskDelay(1); // Wait for 1 tick
     }
