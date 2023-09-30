@@ -70,7 +70,7 @@ void uart_task(void *arg)
     uint8_t* data = (uint8_t*) malloc(BUF_SIZE);
     while (1) {
         // Wait for data to be received
-        int len = uart_read_bytes(UART_NUM_0, data, BUF_SIZE, 1000 / portTICK_PERIOD_MS);
+        int len = uart_read_bytes(UART_NUM_0, data, BUF_SIZE, 0);
 
         if (len > 0) {
             // Process received data
@@ -78,26 +78,16 @@ void uart_task(void *arg)
             msg = std::string(reinterpret_cast<char*>(data));
             //remove \n from msg
             msg.erase(std::remove(msg.begin(), msg.end(), '\n'), msg.end());
-            printf("Received data: %s\n", msg.c_str());
             //msg = A@0.3;0.4,C@0.5
             while(1){
                 std::string robot = msg.substr(0,1);
                 std::string data = msg.substr(2, msg.find(',')-2);
-                
-                printf("Robot: %s\n", robot.c_str());
-                printf("Data: %s\n", data.c_str());
-                //print mac robot from hashmap
-                printf("Robot MAC: ");
-                for(int i = 0; i < ESP_NOW_ETH_ALEN; i++){
-                    printf("%02X:", ROBOT_MACS[robot[0]][i]);
-                }
-                printf("\n");
 
                 send_string_msg(ROBOT_MACS[robot[0]], data);
                 if(msg.find(',') == std::string::npos) break;
                 msg = msg.substr(msg.find(",")+1, msg.length());
+            }
         }
-    }
 
         vTaskDelay(1); // Wait for 1 tick
     }
