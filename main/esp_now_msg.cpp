@@ -88,5 +88,5 @@ void setup_espnow() {
     ESP_ERROR_CHECK(esp_now_register_recv_cb(received_callback));
     /* Set primary master key. */
     ESP_ERROR_CHECK(esp_now_set_pmk((uint8_t *) ESPNOW_PMK));
-    add_peer(BROADCAST_MAC);
+    // add_peer(BROADCAST_MAC);
 }

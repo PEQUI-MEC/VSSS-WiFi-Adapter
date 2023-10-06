@@ -47,17 +47,26 @@ void espnow_to_serial(void * args) {
         packet.data[packet.data_len] = '\0';
         // Create C++ string from byte array
         std::string text(packet.data.begin(), packet.data.begin() + packet.data_len);
-        std::string id_msg = "U";
+        std::string msg = "U";
         for (auto& [id, mac] : ROBOT_MACS) {
             // compare mac address
             if (mac == packet.mac_addr) {
-                id_msg = id;
+                msg = id;
                 break;
             }
         }
+        msg += "@";
+        if (msg == "U@") {
+            // send mac address
+            char mac_str[18];
+            snprintf(mac_str, sizeof(mac_str), "%02x:%02x:%02x:%02x:%02x:%02x",
+                    packet.mac_addr[0], packet.mac_addr[1], packet.mac_addr[2],
+                    packet.mac_addr[3], packet.mac_addr[4], packet.mac_addr[5]);
+            msg += "[" + std::string(mac_str) + "] ";
+        }
         // printf("Received from %c: %s\n", id_msg, text.c_str());
         // send by uart
-        std::string msg = id_msg + '@' + text + '\n';
+        msg += text + '\n';
         const char* send_data = msg.c_str();
         uart_write_bytes(UART_NUM_0, send_data, strlen(send_data));
         vTaskDelay(1); // Wait for 1 tick

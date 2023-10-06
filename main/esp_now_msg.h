@@ -22,7 +22,7 @@
 
 #define ESPNOW_MAXDELAY 512
 #define MAX_RECEIVE_DATA 250
-#define ESPNOW_QUEUE_SIZE 6
+#define ESPNOW_QUEUE_SIZE 25
 #define ESPNOW_CHANNEL 1
 #define ESPNOW_PMK "pmk1234567890123"
 #define ESPNOW_LMK "lmk1234567890123"
@@ -36,8 +36,9 @@ static std::array<uint8_t, ESP_NOW_ETH_ALEN> BROADCAST_MAC = { 0xFF, 0xFF, 0xFF,
 //Unordered hashmap for the mac of robots A, B and C
 static std::unordered_map<char, std::array<uint8_t, ESP_NOW_ETH_ALEN>> ROBOT_MACS = {
     {'A', {0x70, 0xB8, 0xF6, 0x5B, 0xF7, 0xC1}},
-    {'B', {0x30, 0xAE, 0xA4, 0x1C, 0x6C, 0x9D}},
-    {'C', {0x30, 0xAE, 0xA4, 0x1C, 0x6C, 0x9E}}
+    {'B', {0x70, 0xB8, 0xF6, 0x5B, 0xFE, 0xDD}},
+    {'C', {0x70, 0xB8, 0xF6, 0x5B, 0x2E, 0xC1}},
+    {'D', {0x70, 0xB8, 0xF6, 0x5B, 0x2E, 0x45}}
 };
 
 
