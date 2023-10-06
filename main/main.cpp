@@ -66,35 +66,41 @@ void espnow_to_serial(void * args) {
         }
         // printf("Received from %c: %s\n", id_msg, text.c_str());
         // send by uart
-        msg += text + '\n';
+        msg += text + '#';
         const char* send_data = msg.c_str();
         uart_write_bytes(UART_NUM_0, send_data, strlen(send_data));
         vTaskDelay(1); // Wait for 1 tick
     }
 }
 
+
+void send_msg(const std::string& msg) {
+    std::string robot = msg.substr(0,1);
+    std::string data = msg.substr(2, msg.find('#')-2);
+
+    // std::string feedb = "T@ sending " + data + " to " + robot[0] + "#";
+    // uart_write_bytes(UART_NUM_0, feedb.c_str(), feedb.size());
+
+    send_string_msg(ROBOT_MACS[robot[0]], data);
+}
+
 void uart_task(void *arg)
 {
     std::string msg;
     uint8_t* data = (uint8_t*) malloc(BUF_SIZE);
+    std::string buffer;
+    // reserve 500 bytes
+    buffer.reserve(500);
     while (1) {
         // Wait for data to be received
         int len = uart_read_bytes(UART_NUM_0, data, BUF_SIZE, 0);
+        data[len] = 0;
 
-        if (len > 0) {
-            // Process received data
-            data[len] = 0; // Null-terminate the received data
-            msg = std::string(reinterpret_cast<char*>(data));
-            //remove \n from msg
-            msg.erase(std::remove(msg.begin(), msg.end(), '\n'), msg.end());
-            //msg = A@0.3;0.4,C@0.5
-            while(1){
-                std::string robot = msg.substr(0,1);
-                std::string data = msg.substr(2, msg.find(',')-2);
-
-                send_string_msg(ROBOT_MACS[robot[0]], data);
-                if(msg.find(',') == std::string::npos) break;
-                msg = msg.substr(msg.find(",")+1, msg.length());
+        for (int i = 0; i < len; i++) {
+            buffer += data[i];
+            if (data[i] == '#') {
+                send_msg(buffer);
+                buffer.clear();
             }
         }
 
