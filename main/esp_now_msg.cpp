@@ -26,6 +26,19 @@ void received_callback(const esp_now_recv_info *info, const uint8_t *data, int l
     }
 
     std::copy(info->src_addr, info->src_addr + ESP_NOW_ETH_ALEN, packet.mac_addr.begin());
+
+    // only allow messages from macs in ROBOT_MACS
+    bool valid_mac = false;
+    for (auto& [id, mac] : ROBOT_MACS) {
+        if (id != 'X' && mac == packet.mac_addr) {
+            valid_mac = true;
+            break;
+        }
+    }
+    if (!valid_mac) {
+        return;
+    }
+
     std::copy(data, data + len, packet.data.begin());
     packet.data_len = len;
 
@@ -88,5 +101,5 @@ void setup_espnow() {
     ESP_ERROR_CHECK(esp_now_register_recv_cb(received_callback));
     /* Set primary master key. */
     ESP_ERROR_CHECK(esp_now_set_pmk((uint8_t *) ESPNOW_PMK));
-    // add_peer(BROADCAST_MAC);
+    add_peer(BROADCAST_MAC);
 }

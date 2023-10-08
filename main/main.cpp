@@ -55,38 +55,14 @@ void espnow_to_serial(void * args) {
                 break;
             }
         }
-        msg += "@";
-        if (msg == "U@") {
-            // send mac address
-            char mac_str[18];
-            snprintf(mac_str, sizeof(mac_str), "%02x:%02x:%02x:%02x:%02x:%02x",
-                    packet.mac_addr[0], packet.mac_addr[1], packet.mac_addr[2],
-                    packet.mac_addr[3], packet.mac_addr[4], packet.mac_addr[5]);
-            msg += "[" + std::string(mac_str) + "] ";
-        }
-        // printf("Received from %c: %s\n", id_msg, text.c_str());
-        // send by uart
-        msg += text + '#';
+        msg += "@" + text + '#';
         const char* send_data = msg.c_str();
         uart_write_bytes(UART_NUM_0, send_data, strlen(send_data));
         vTaskDelay(1); // Wait for 1 tick
     }
 }
 
-
-void send_msg(const std::string& msg) {
-    std::string robot = msg.substr(0,1);
-    std::string data = msg.substr(2, msg.find('#')-2);
-
-    // std::string feedb = "T@ sending " + data + " to " + robot[0] + "#";
-    // uart_write_bytes(UART_NUM_0, feedb.c_str(), feedb.size());
-
-    send_string_msg(ROBOT_MACS[robot[0]], data);
-}
-
-void uart_task(void *arg)
-{
-    std::string msg;
+void uart_task(void *arg) {
     uint8_t* data = (uint8_t*) malloc(BUF_SIZE);
     std::string buffer;
     // reserve 500 bytes
@@ -94,13 +70,18 @@ void uart_task(void *arg)
     while (1) {
         // Wait for data to be received
         int len = uart_read_bytes(UART_NUM_0, data, BUF_SIZE, 0);
-        data[len] = 0;
+        // data[len] = 0;
 
         for (int i = 0; i < len; i++) {
-            buffer += data[i];
             if (data[i] == '#') {
-                send_msg(buffer);
+                if (buffer[0] >= 'A' && buffer[0] <= 'Z' && buffer[1] == '@') {
+                    char id = buffer[0];
+                    std::string msg = buffer.substr(2);
+                    send_string_msg(ROBOT_MACS[id], msg);
+                }
                 buffer.clear();
+            } else {
+                buffer += data[i];
             }
         }
 
