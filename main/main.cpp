@@ -75,9 +75,10 @@ void uart_task(void *arg) {
         for (int i = 0; i < len; i++) {
             if (data[i] == '#') {
                 if (buffer[0] >= 'A' && buffer[0] <= 'Z' && buffer[1] == '@') {
-                    char id = buffer[0];
-                    std::string msg = buffer.substr(2);
-                    send_string_msg(ROBOT_MACS[id], msg);
+                    // char id = buffer[0];
+                    // std::string msg = buffer.substr(2);
+                    // send_string_msg(ROBOT_MACS[id], msg);
+                    send_string_msg(BROADCAST_MAC, buffer);
                 }
                 buffer.clear();
             } else {
