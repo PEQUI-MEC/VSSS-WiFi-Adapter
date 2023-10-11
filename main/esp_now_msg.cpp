@@ -74,7 +74,7 @@ void setup_wifi() {
     ESP_ERROR_CHECK(esp_wifi_set_ps(WIFI_PS_NONE));
     ESP_ERROR_CHECK(esp_wifi_set_protocol(ESPNOW_WIFI_IF, WIFI_PROTOCOL_11B|WIFI_PROTOCOL_11G|WIFI_PROTOCOL_11N));
     ESP_ERROR_CHECK(esp_wifi_start());
-    ESP_ERROR_CHECK(esp_wifi_set_max_tx_power(80));
+    // ESP_ERROR_CHECK(esp_wifi_set_max_tx_power(78));
 }
 
 void add_peer(std::array<uint8_t, ESP_NOW_ETH_ALEN>& mac) {
